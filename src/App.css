@@ -33,15 +33,94 @@ body {
   overflow-x: hidden;
 }
 
-.student-header{
+.student-header {
   color: var(--primary-color);
   text-align: center;
   padding: 10px;
-  font-family: avenir;
+  font-family: poppins;
   font-weight: 900;
 }
 
- form{
+table {
+  margin: 40px auto;
+  width: 90vw;
+  max-width: 500px;
+  text-align: start;
+  border: 1px solid gray;
+  border-collapse: collapse;
+  font-family: inter;
+  font-weight: 700;
+}
+
+td,
+th {
+  border: 1px solid gray;
+  padding: 3px 10px;
+}
+
+td::first-letter {
+  text-transform: uppercase;
+}
+
+th {
+  font-size: 20px;
+  color: var(--primary-color);
+  text-align: start;
+}
+
+.legend {
+  padding: 10px;
+  list-style-type: disc;
+  list-style-position: inside;
+  font-family: inter;
+}
+
+.legend h3 {
+  display: inline;
+}
+
+.defaulter-cont {
+  border: 1px solid gray;
+  margin: 0 10px;
+  max-width: 500px;
+}
+
+.matric-number-tile {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 10px;
+  border: 1px solid white;
+  text-transform: uppercase;
+}
+
+.offences-cont{
+  animation: topdown 0.4s linear 0s 1 forwards;
+}
+
+@keyframes topdown {
+  0%{
+    height: 0%;
+  }
+
+  100%{
+    height: max-content;
+  }
+}
+
+.arrow{
+    transition: all 0.3s linear;
+}
+
+.defaulter-cont svg{
+  width: 20px;
+  height: 20px;
+  margin: auto;
+  display: block;
+  fill: var(--primary-color);
+}
+
+form {
   width: fit-content;
   margin: 30px auto;
   font-family: poppins, sans-serif;
@@ -49,19 +128,19 @@ body {
   padding: 20px;
   border-radius: 5px;
   margin-bottom: 30px;
- }
+}
 
-label{
+label {
   display: block;
   margin-top: 10px;
 }
 
-input{
+input {
   height: 30px;
   width: 200px;
 }
 
-button{
+button {
   display: block;
   margin: 30px 0 0;
   padding: 10px 30px;
@@ -72,7 +151,19 @@ button{
   border-radius: 5px;
 }
 
-.login-error-message{
+.login-error-message {
   color: red;
   margin-top: 10px;
+}
+
+.default {
+  color: gray;
+}
+
+.UI {
+  color: red;
+}
+
+.approved {
+  color: green;
 }

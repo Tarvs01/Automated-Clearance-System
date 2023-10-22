@@ -1,10 +1,9 @@
 import React, { useState, FormEvent, ChangeEvent } from "react";
 import { DefaulterDetails, StaffData } from "./types";
 import axios from "axios";
-import { clear } from "console";
 
 function Defaulter({ props, updateState }: DefaulterDetails) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [offenceDetails, setOffenceDetails] = useState({
     description: "",
@@ -76,9 +75,21 @@ function Defaulter({ props, updateState }: DefaulterDetails) {
   return (
     <div className="defaulter-cont">
       <div className="main-cont">
-        <div className="matric-number-tile">
+        <div className="matric-number-tile" onClick={() => setIsOpen(!isOpen)}>
           <p>{props.matricNumber}</p>
-          <div className="arrow">&gt;</div>
+          <div className="arrow" style={{transform: `rotate(${isOpen ? "0deg" : "-90deg"})`}}>
+            <svg
+              height="57.5"
+              viewBox="0 0 95 57.5"
+              width="95"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0 10.1C0 7.5 1 5 2.9 3 6.8-.9 13.2-.9 17.1 3l30.4 30.3L77.9 2.9C81.8-1 88.2-1 92.1 2.9s3.9 10.3 0 14.2L54.6 54.6c-1.9 1.9-4.4 2.9-7.1 2.9s-5.2-1.1-7.1-2.9L2.9 17.2C1 15.2 0 12.6 0 10.1z"
+                fill="inherit"
+              ></path>
+            </svg>
+          </div>
         </div>
 
         {isOpen && (
