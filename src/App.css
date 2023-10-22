@@ -1,0 +1,78 @@
+@font-face {
+  font-family: inter;
+  src: url(../src/fonts/Inter-Regular.ttf);
+}
+
+@font-face {
+  font-family: poppins;
+  src: url(../src/fonts/Poppins-Medium.ttf);
+}
+
+@font-face {
+  font-family: poppinsL;
+  src: url(../src/fonts/Poppins-Light.ttf);
+}
+
+@font-face {
+  font-family: avenir;
+  src: url(../src/fonts/Avenir\ Light.ttf);
+}
+
+:root {
+  --primary-color: blue;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+.student-header{
+  color: var(--primary-color);
+  text-align: center;
+  padding: 10px;
+  font-family: avenir;
+  font-weight: 900;
+}
+
+ form{
+  width: fit-content;
+  margin: 30px auto;
+  font-family: poppins, sans-serif;
+  border: 1px solid gray;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+ }
+
+label{
+  display: block;
+  margin-top: 10px;
+}
+
+input{
+  height: 30px;
+  width: 200px;
+}
+
+button{
+  display: block;
+  margin: 30px 0 0;
+  padding: 10px 30px;
+  border: none;
+  font-family: poppins, sans-serif;
+  background-color: blue;
+  color: white;
+  border-radius: 5px;
+}
+
+.login-error-message{
+  color: red;
+  margin-top: 10px;
+}
