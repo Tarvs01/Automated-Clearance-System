@@ -1,41 +1,35 @@
-import React, { FormEvent, useState, ChangeEvent } from 'react'
-import { useNavigate } from 'react-router-dom';
+import React, { FormEvent, useState, ChangeEvent, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 function StudentLogin() {
+  const [matricNumber, setMatricNumber] = useState("");
+  const navigate = useNavigate();
+  const matricNumberError = useRef<HTMLParagraphElement>(null)
 
-    const [matricNumber, setMatricNumber] = useState("");
-    const navigate = useNavigate();
-
-    const handleSubmit = (e: FormEvent) => {
-        e.preventDefault();
-        if (!/^([a-z]{3})(\/\d{2})(\/\d{4})$/.test(matricNumber)) {
-            console.log("invalid matric number");
-            let input: HTMLInputElement | null = document.querySelector("input");
-            input!.style.borderColor = "red";
-        }
-        else {
-            let route = matricNumber.replaceAll("/", "-");
-            navigate(route);
-        }
-        
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!/^([a-z]{3})(\/\d{2})(\/\d{4})$/.test(matricNumber)) {
+      matricNumberError.current!.textContent = "Invalid matric number";
+    } else {
+      let route = matricNumber.replaceAll("/", "-");
+      navigate(`/student/${route}`);
     }
+  };
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setMatricNumber(e.target.value);
-        let input: HTMLInputElement | null = document.querySelector("input");
-        input!.style.borderColor = "gray";
-    }
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setMatricNumber(e.target.value.toLowerCase());
+  };
 
   return (
-      <div>
-          <form onSubmit={handleSubmit}>
-              <h1>Enter Your Matric Number</h1>
-              <input type="text" onChange={handleChange}/>
-
-              <button type="submit">Submit</button>
-          </form>
+    <div>
+      <form onSubmit={handleSubmit} className="staff-form center-form">
+        <h2>Enter Your Matric Number</h2>
+        <input type="text" onChange={handleChange} className="lowercase" />
+        <p className="error-para" ref={matricNumberError}></p>
+        <button type="submit">Submit</button>
+      </form>
     </div>
-  )
+  );
 }
 
-export default StudentLogin
+export default StudentLogin;

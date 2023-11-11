@@ -1,11 +1,19 @@
-import React, { useState, FormEvent, ChangeEvent, useRef } from "react";
+import React, {
+  useState,
+  useRef,
+  FormEvent,
+  ChangeEvent,
+  useContext,
+} from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Spinner from "./Spinner";
+import { AppContext } from "./AppProvider";
 import PasswordInput from "./PasswordInput";
 
-function StaffLogin() {
-  const [staffLoginData, setStaffLoginData] = useState({
+function AdminLogin() {
+  const context = useContext(AppContext);
+  const [adminLoginData, setadminLoginData] = useState({
     email: "",
     password: "",
   });
@@ -20,10 +28,10 @@ function StaffLogin() {
     e.preventDefault();
     setIsLoading(true); //display the spinner
     loginError.current!.textContent = ""; //clear any error
-
+    
     //attempt to authenticate user
     axios
-      .post("http://192.168.56.1:5000/loginstaff", staffLoginData)
+      .post("http://192.168.56.1:5000/loginadmin", adminLoginData)
       .then((response) => {
         //if request success
         setIsLoading(false); //hide loading spinner
@@ -33,10 +41,8 @@ function StaffLogin() {
           loginError.current!.textContent = "Invalid credentials"; //display error message
         } else {
           //otherwise
-          if (sessionStorage) {
-            sessionStorage.setItem("ACS", response.data.data.dept);
-          }
-          navigate("/staff"); //navigate to their page
+          context?.setIsLoggedIn(true);
+          navigate("/admin"); //navigate to their page
         }
       })
       .catch((error) => {
@@ -50,13 +56,13 @@ function StaffLogin() {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     loginError.current!.textContent = ""; //clear any error
-    setStaffLoginData({ ...staffLoginData, [e.target.name]: e.target.value });
+    setadminLoginData({ ...adminLoginData, [e.target.name]: e.target.value });
   };
 
   return (
     <div>
       <form onSubmit={handleSubmit} className="staff-form center-form">
-        <h2> Staff Login</h2>
+        <h2> Admin Login</h2>
 
         <label htmlFor="email">Email</label>
         <input
@@ -67,8 +73,8 @@ function StaffLogin() {
           required
         />
 
-        <label htmlFor="password">Password</label>
-        <PasswordInput change={handleChange} />
+              <label htmlFor="password">Password</label>
+              <PasswordInput change={handleChange} />
         {/* <input
           type="password"
           name="password"
@@ -85,4 +91,4 @@ function StaffLogin() {
   );
 }
 
-export default StaffLogin;
+export default AdminLogin;

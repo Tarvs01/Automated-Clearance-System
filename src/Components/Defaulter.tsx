@@ -1,8 +1,9 @@
-import React, { useState, FormEvent, ChangeEvent } from "react";
+import React, { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import { DefaulterDetails, StaffData } from "./types";
 import axios from "axios";
+import { AnimatePresence, motion } from "framer-motion";
 
-function Defaulter({ props, updateState }: DefaulterDetails) {
+function Defaulter({ props, updateState, openDefaulter }: DefaulterDetails) {
   const [isOpen, setIsOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [offenceDetails, setOffenceDetails] = useState({
@@ -10,12 +11,16 @@ function Defaulter({ props, updateState }: DefaulterDetails) {
     date: "",
   });
 
+  //handler function for the new offence form submission
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
+    //update the staff details to include the new offence
     updateState((prevState) => {
       let newState: StaffData = { dept: "", defaulters: [] };
       newState.dept = prevState.dept;
+
+      //add the new offence to the right offender
       newState.defaulters = prevState.defaulters.map((val) => {
         if (val.id === props.id) {
           val.offences.push({
@@ -29,17 +34,28 @@ function Defaulter({ props, updateState }: DefaulterDetails) {
       return newState;
     });
 
+    //close the form
     setIsFormOpen(!isFormOpen);
   }
 
-  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+  //function handler for the form input element
+  function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
     setOffenceDetails({ ...offenceDetails, [e.target.name]: e.target.value });
   }
 
+  //function handler for the form textarea element
+  function handleTextareaChange(e: ChangeEvent<HTMLTextAreaElement>) {
+    setOffenceDetails({ ...offenceDetails, [e.target.name]: e.target.value });
+  }
+
+  //function for removing an offenders offence
   function removeOffence(id: number) {
+    //update the staff state
     updateState((prevState) => {
       let newState: StaffData = { dept: "", defaulters: [] };
       newState.dept = prevState.dept;
+
+      //filter out the offence from the other offences
       newState.defaulters = prevState.defaulters.map((val) => {
         if (val.id === props.id) {
           val.offences = val.offences.filter((value) => value.id !== id);
@@ -47,37 +63,53 @@ function Defaulter({ props, updateState }: DefaulterDetails) {
         return val;
       });
 
+      //if the offender no longer has any offence, remove the offender from the list
       let clearedMatricNumber = "";
-      newState.defaulters = newState.defaulters.filter(
-        (val) => {
-          if (val.offences.length === 0) {
-            clearedMatricNumber = val.matricNumber.replaceAll("/", "-");
-            return false;
-          }
-          return true;
+      newState.defaulters = newState.defaulters.filter((val) => {
+        if (val.offences.length === 0) {
+          clearedMatricNumber = val.matricNumber.replaceAll("/", "-");
+          return false;
         }
-      );
+        return true;
+      });
 
+      //update the database
       if (clearedMatricNumber) {
-        console.log("About to call clear defaulter for: ", clearedMatricNumber);
-        axios.put("http://192.168.56.1:5000/removesingledefaulter", { dept: prevState.dept, matricNumber: clearedMatricNumber }).then((response) => {
-          console.log("Called clear defaulter for: ", clearedMatricNumber);
-          console.log(response);
-        }).catch((error) => {
-          console.log(error);
-        })
+        axios
+          .put("http://192.168.56.1:5000/removesingledefaulter", {
+            dept: prevState.dept,
+            matricNumber: clearedMatricNumber,
+          })
+          .then((response) => {
+            setIsOpen(!isOpen);
+          })
+          .catch((error) => {
+            alert(
+              "There was an error with your request. Please refresh the page to clarify"
+            );
+          });
       }
-      
+
       return newState;
     });
   }
+
+  //close other open defaulter components when this one is opened
+  useEffect(() => {
+    if (isOpen) {
+      openDefaulter(setIsOpen, props.id);
+    }
+  }, [isOpen]);
 
   return (
     <div className="defaulter-cont">
       <div className="main-cont">
         <div className="matric-number-tile" onClick={() => setIsOpen(!isOpen)}>
           <p>{props.matricNumber}</p>
-          <div className="arrow" style={{transform: `rotate(${isOpen ? "0deg" : "-90deg"})`}}>
+          <div
+            className="arrow"
+            style={{ transform: `rotate(${isOpen ? "0deg" : "-90deg"})` }}
+          >
             <svg
               height="57.5"
               viewBox="0 0 95 57.5"
@@ -92,52 +124,69 @@ function Defaulter({ props, updateState }: DefaulterDetails) {
           </div>
         </div>
 
-        {isOpen && (
-          <div className="offences-cont">
-            {props.offences.map((value) => {
-              return (
-                <div className="offence-cont" key={value.id}>
-                  <h3>Details</h3>
-                  <p>{value.description}</p>
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              className="offences-cont"
+              initial={{ height: "0px" }}
+              animate={{ height: "auto" }}
+              exit={{ height: "0px" }}
+            >
+              {props.offences.map((value) => {
+                return (
+                  <div className="offence-cont" key={value.id}>
+                    <h3>Details</h3>
+                    <p>{value.description}</p>
 
-                  <h3>Date</h3>
-                  <p>{value.date}</p>
+                    <h3>Date</h3>
+                    <p>{value.date}</p>
 
-                  <button onClick={() => removeOffence(value.id)}>
-                    Clear offence
-                  </button>
-                </div>
-              );
-            })}
+                    <button
+                      onClick={() => {
+                        removeOffence(value.id);
+                        console.log("remove called");
+                      }}
+                    >
+                      Clear offence
+                    </button>
+                  </div>
+                );
+              })}
 
-            {isFormOpen && (
-              <form onSubmit={handleSubmit}>
-                <label htmlFor="description">Description</label>
-                <input
-                  type="text"
-                  name="description"
-                  id="description"
-                  onChange={handleChange}
-                />
+              {isFormOpen && (
+                <form onSubmit={handleSubmit} className="add-new-offence-form">
+                  <label htmlFor="description">Description</label>
+                  <textarea
+                    name="description"
+                    id="description"
+                    rows={6}
+                    onChange={handleTextareaChange}
+                    required
+                  ></textarea>
 
-                <label htmlFor="date">Date</label>
-                <input
-                  type="date"
-                  name="date"
-                  id="date"
-                  onChange={handleChange}
-                />
+                  <label htmlFor="date">Date</label>
+                  <input
+                    type="date"
+                    name="date"
+                    id="date"
+                    required
+                    onChange={handleInputChange}
+                  />
 
-                <button type="submit">Add Offence</button>
-              </form>
-            )}
-            {!isFormOpen && (
-              <button onClick={() => setIsFormOpen(!isFormOpen)}>
-                Add New Offence
-              </button>
-            )}
-          </div>
-        )}
+                  <button type="submit">Add Offence</button>
+                </form>
+              )}
+              {!isFormOpen && (
+                <button
+                  onClick={() => setIsFormOpen(!isFormOpen)}
+                  className="add-new-offence-btn"
+                >
+                  Add New Offence
+                </button>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

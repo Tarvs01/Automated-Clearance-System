@@ -1,6 +1,6 @@
 {
-  "short_name": "Foodcate",
-  "name": "Foodcate",
+  "short_name": "Automated Clearance System",
+  "name": "Automated Clearance System",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +20,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#EE5524",
+  "theme_color": "#0000ff",
   "background_color": "#ffffff"
 }
